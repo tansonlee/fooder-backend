@@ -9,12 +9,10 @@ const axios = require("axios");
 
 const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
+let allRestaurants = [];
+let acceptedRestaurants = [];
 
-io.on("connection", async (socket) => {
-  let acceptedRestaurants = [];
+const getRestaurants = async () => {
   try {
     const yelpRes = await axios.get(process.env.YELP_RESTAURANT_ENDPOINT, {
       headers: {
@@ -24,11 +22,27 @@ io.on("connection", async (socket) => {
         location: "Waterloo, Ontario",
       },
     });
-    acceptedRestaurants = yelpRes.data.businesses;
+    allRestaurants = yelpRes.data.businesses;
   } catch (error) {
     console.error(error);
   }
-  console.log(acceptedRestaurants[0]);
+};
+getRestaurants();
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/prototype.html");
+});
+
+app.get("/restaurants", (req, res) => {
+  restaurantList = allRestaurants.map((restaurant) => {
+    return restaurant.name;
+  });
+  res.json({
+    restaurants: restaurantList,
+  });
+});
+
+io.on("connection", async (socket) => {
   socket.on("accept restaurant", (restaurant) => {
     acceptedRestaurants = [...acceptedRestaurants, restaurant];
     io.emit("update restaurants", acceptedRestaurants);

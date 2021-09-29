@@ -56,8 +56,9 @@
     </style>
   </head>
   <body>
-    <button>swipe no</button>
-    <button>swipe right</button>
+    <h1 id="restaurant-name">Loading restaurant...</h1>
+    <button id="no-button">swipe no</button>
+    <button id="yes-button">swipe yes</button>
     <ul id="messages"></ul>
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
@@ -68,6 +69,29 @@
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");
+      var restaurantTitle = document.getElementById("restaurant-name");
+      var noButton = document.getElementById("no-button");
+      var yesButton = document.getElementById("yes-button");
+
+      const addSwipeListener = (element) => {
+        element.addEventListener("click", () => {
+          ++current_index;
+          restaurantTitle.innerText = restaurants[current_index];
+        });
+      };
+      addSwipeListener(noButton);
+      addSwipeListener(yesButton);
+
+      let restaurants = [];
+      let current_index = 0;
+
+      console.log("hello");
+      fetch("/restaurants")
+        .then((response) => response.json())
+        .then((json) => {
+          restaurantTitle.innerText = json.restaurants[0];
+          restaurants = json.restaurants;
+        });
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
