@@ -59,6 +59,8 @@
     <h1 id="restaurant-name">Loading restaurant...</h1>
     <button id="no-button">swipe no</button>
     <button id="yes-button">swipe yes</button>
+    <h3>Accepted restaurants</h3>
+    <ul id="accepted-restaurants"></ul>
     <ul id="messages"></ul>
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
@@ -69,18 +71,10 @@
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");
+      var acceptedRestaurants = document.getElementById("accepted-restaurants");
       var restaurantTitle = document.getElementById("restaurant-name");
       var noButton = document.getElementById("no-button");
       var yesButton = document.getElementById("yes-button");
-
-      const addSwipeListener = (element) => {
-        element.addEventListener("click", () => {
-          ++current_index;
-          restaurantTitle.innerText = restaurants[current_index];
-        });
-      };
-      addSwipeListener(noButton);
-      addSwipeListener(yesButton);
 
       let restaurants = [];
       let current_index = 0;
@@ -93,12 +87,32 @@
           restaurants = json.restaurants;
         });
 
+      yesButton.addEventListener("click", () => {
+        socket.emit("accept restaurant", restaurants[current_index]);
+      });
+
+      const addSwipeListener = (element) => {
+        element.addEventListener("click", () => {
+          ++current_index;
+          restaurantTitle.innerText = restaurants[current_index];
+        });
+      };
+
+      addSwipeListener(noButton);
+      addSwipeListener(yesButton);
+
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (input.value) {
           socket.emit("chat message", input.value);
           input.value = "";
         }
+      });
+
+      socket.on("new match", (restaurantTitle) => {
+        let acceptedRestaurant = document.createElement("li");
+        acceptedRestaurant.textContent = restaurantTitle;
+        acceptedRestaurants.appendChild(acceptedRestaurant);
       });
 
       socket.on("chat message", function (msg) {
