@@ -7,6 +7,14 @@ const io = new Server(server);
 const dotEnv = require("dotenv").config();
 const axios = require("axios");
 
+const {
+  handleCreateRoom,
+  handleJoinRoom,
+  handleLeaveRoom,
+  handleChangeRoomCharacteristics
+} = require("./roomsAndUsers/roomHandlers");
+
+
 const port = process.env.PORT || 3000;
 
 let allRestaurants = [];
@@ -57,6 +65,19 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
+
+  // user creates a new room
+  socket.on("create_room", handleCreateRoom(io, socket));
+
+  // user joins an existing room
+  socket.on("join_room", handleJoinRoom(io));
+
+  // user leaves a room
+  socket.on("leave_room", handleLeaveRoom(io));
+
+  // changing a room's characteristics
+  // newCharacteristics is an object with the new characteristics
+  socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
 });
 
 server.listen(port, () => {
