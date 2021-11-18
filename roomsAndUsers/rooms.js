@@ -1,48 +1,52 @@
-const Room = require('./room');
-const User = require('./user');
+const { generateRoomId, generateUserId } = require("../utilities");
+const Room = require("./room");
+const User = require("./user");
 
 class Rooms {
-    constructor() {
-        this.rooms = [];
-    }
+	constructor() {
+		this.rooms = [];
+	}
 
-    // returns the new room
-    createRoom = (userId, roomId) => {
-        const room = new Room(userId, roomId, true);
-        this.rooms.push(room);
-        return room;
-    }
+	// returns roomid and userid
+	createRoom = username => {
+		const newRoomId = generateRoomId();
+		const newUserId = generateUserId();
+		const room = new Room(username, userId, newRoomId, true);
+		this.rooms.push(room);
+		return { roomId: newRoomId, userId: newUserId };
+	};
 
-    // returns the new user
-    addUserToRoom = (user, username, roomId) => {
-        const room = this.rooms.find(room => room.id === roomId);
-        if (!room) {
-            return null;
-        }
-        const user = new User(userId, username, false);
-        room.addUser(user);
-        return room
-    }
+	// returns the new user
+	addUserToRoom = (username, roomId) => {
+		const room = this.rooms.find(room => room.id === roomId);
+		if (!room) {
+			return null;
+		}
+		const user = new User(username, userId, false);
+		room.addUser(user);
 
-    // returns the user
-    removeUserFromRoom = (userId, roomId) => {
-        const room = this.rooms.find(room => room.id === roomId);
-        if (!room) {
-            return null;
-        }
-        room.removeUser(userId);
-        return room;
-    }
+		return room.getCurrentUsers();
+	};
 
-    // returns the room
-    changeRoomCharacteristics = (userId, roomId, newCharacteristics) => {
-        const room = this.rooms.find(room => room.id === roomId);
-        if (!room) {
-            return null;
-        }
-        room.changeCharacteristics(userId, newCharacteristics);
-        return room;
-    }
+	// returns the user
+	removeUserFromRoom = (userId, roomId) => {
+		const room = this.rooms.find(room => room.id === roomId);
+		if (!room) {
+			return null;
+		}
+		room.removeUser(userId);
+		return room;
+	};
+
+	// returns the room
+	changeRoomCharacteristics = (userId, roomId, newCharacteristics) => {
+		const room = this.rooms.find(room => room.id === roomId);
+		if (!room) {
+			return null;
+		}
+		room.changeCharacteristics(userId, newCharacteristics);
+		return room;
+	};
 }
 
 module.exports = Rooms;
