@@ -11,9 +11,8 @@ const {
   handleCreateRoom,
   handleJoinRoom,
   handleLeaveRoom,
-  handleChangeRoomCharacteristics
+  handleChangeRoomCharacteristics,
 } = require("./roomsAndUsers/roomHandlers");
-
 
 const port = process.env.PORT || 3000;
 
@@ -30,12 +29,13 @@ const getRestaurants = async () => {
         location: "Waterloo, Ontario",
       },
     });
-    allRestaurants = yelpRes.data.businesses;
+    return yelpRes.data.businesses;
   } catch (error) {
     console.error(error);
   }
 };
-getRestaurants();
+allRestaurants = getRestaurants();
+console.log(allRestaurants);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/prototype.html");
@@ -51,7 +51,7 @@ app.get("/restaurants", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log(socket);
+  // console.log(socket);
   socket.on("accept restaurant", (restaurant) => {
     console.log("accepted:", restaurant);
     acceptedRestaurants = [...acceptedRestaurants, restaurant];
@@ -79,6 +79,17 @@ io.on("connection", (socket) => {
   // newCharacteristics is an object with the new characteristics
   socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
 });
+
+// in a room, listen for "user_joined", then add this user to
+// a list of users for display/validating match purposes
+
+// if a user enters a roomID, direct that user to the room
+app.get("/:roomId", function (req, res) {
+  console.log(req.params);
+  res.sendFile(__dirname + "/prototype.html");
+});
+
+// if you send a text to someone, link to app store
 
 server.listen(port, () => {
   console.log("listening on *:3000");
