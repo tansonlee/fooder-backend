@@ -51,7 +51,7 @@ app.get("/restaurants", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  // console.log(socket);
+  console.log(socket);
   socket.on("accept restaurant", (restaurant) => {
     console.log("accepted:", restaurant);
     acceptedRestaurants = [...acceptedRestaurants, restaurant];

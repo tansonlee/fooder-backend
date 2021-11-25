@@ -1,11 +1,13 @@
 class Room {
-  constructor(roomId) {
+  constructor(username, userId, roomId, isAdmin) {
     this.roomId = roomId;
     this.users = [];
     this.currentFoodChoices = [];
     this.characteristics = {
       location: "",
     };
+
+    this.addUser(new User(username, userId, isAdmin));
   }
 
   addUser(user) {
@@ -23,6 +25,10 @@ class Room {
     }
     this.characteristics = { ...this.characteristics, ...characteristics };
   }
+
+  getCurrentUsers = () => {
+    return this.users.map((user) => user.username);
+  };
 }
 
-module.exports = Room;
+modules.exports = Room;

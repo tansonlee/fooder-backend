@@ -1,3 +1,4 @@
+const { generateRoomId, generateUserId } = require("../utilities");
 const Room = require("./room");
 const User = require("./user");
 
@@ -6,22 +7,25 @@ class Rooms {
     this.rooms = [];
   }
 
-  // returns the new room
-  createRoom = (userId, roomId) => {
-    const room = new Room(userId, roomId, true);
+  // returns roomid and userid
+  createRoom = (username) => {
+    const newRoomId = generateRoomId();
+    const newUserId = generateUserId();
+    const room = new Room(username, userId, newRoomId, true);
     this.rooms.push(room);
-    return room;
+    return { roomId: newRoomId, userId: newUserId };
   };
 
   // returns the new user
-  addUserToRoom = (user, username, roomId) => {
+  addUserToRoom = (username, roomId) => {
     const room = this.rooms.find((room) => room.id === roomId);
     if (!room) {
       return null;
     }
-    const newUser = new User(userId, username, false);
-    room.addUser(newUser);
-    return room;
+    const user = new User(username, userId, false);
+    room.addUser(user);
+
+    return room.getCurrentUsers();
   };
 
   // returns the user
