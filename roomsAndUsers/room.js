@@ -31,4 +31,4 @@ class Room {
   };
 }
 
-modules.exports = Room;
+module.exports = Room;
