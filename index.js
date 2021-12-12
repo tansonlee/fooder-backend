@@ -57,7 +57,7 @@ app.get("/restaurants", async (req, res) => {
 
 app.post("/create-room", (req, res) => {
   console.log("Hi tanson");
-  const { userId, roomId } = handleCreateRoom(req.body.username);
+  const { userId, roomId } = handleCreateRoom(req.body.username); // should perform a "legit" check
   res.status(200).json({ userId, roomId });
 });
 
@@ -66,6 +66,11 @@ io.on("connection", (socket) => {
     console.log("accepted:", restaurant);
     acceptedRestaurants = [...acceptedRestaurants, restaurant];
     io.emit("new match", restaurant);
+  });
+  socket.on("join", ({ username, roomId }) => {
+    console.log("user", username, "id", roomId);
+    socket.join(roomId);
+    handleJoinRoom(io)(username, roomId);
   });
   socket.on("chat message", (msg) => {
     console.log("new msg", msg);
@@ -90,13 +95,15 @@ io.on("connection", (socket) => {
   socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
 });
 
-// in a room, listen for "user_joined", then add this user to
+// in a room, listen for "user joined", then add this user to
 // a list of users for display/validating match purposes
 
 // if a user enters a roomID, direct that user to the room
-app.get("/:roomId", function (req, res) {
-  console.log(req.params);
-  res.sendFile(__dirname + "/prototype.html");
+app.post("/:roomId", function (req, res) {
+  console.log(req.body);
+  handleJoinRoom(io)(req.body.username, req.params.roomId);
+  res.status(200).json({ status: 200 });
+  // res.sendFile(__dirname + "/prototype.html");
 });
 
 // if you send a text to someone, link to app store
