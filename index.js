@@ -70,6 +70,7 @@ io.on("connection", (socket) => {
   socket.on("join", ({ username, roomId }) => {
     console.log("user", username, "id", roomId);
     socket.join(roomId);
+    console.log(socket.rooms);
     handleJoinRoom(io)(username, roomId);
   });
   socket.on("chat message", (msg) => {
@@ -93,6 +94,31 @@ io.on("connection", (socket) => {
   // changing a room's characteristics
   // newCharacteristics is an object with the new characteristics
   socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
+
+  socket.on("request restaurants", async () => {
+    /*
+
+
+    THIS NEEDS TO BE FIXED BADLY LOL
+    THe problem is that socket.rooms returns a set
+    We should try to figure out what the long ID is for and how to use it/get rid of it
+    
+    
+    */
+
+    console.log("REQUEST", socket.rooms);
+    let room = "hi";
+    socket.rooms.forEach((item) => {
+      if (item.length == 6) {
+        room = item;
+      }
+    });
+    console.log("room", room);
+    const restaurants = await getRestaurants();
+    console.log(restaurants[0]);
+    io.in(room).emit("found restaurants", restaurants);
+    console.log("done");
+  });
 });
 
 // in a room, listen for "user joined", then add this user to
