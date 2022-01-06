@@ -7,6 +7,7 @@ const io = new Server(server);
 const dotEnv = require("dotenv").config();
 const axios = require("axios");
 const bodyParser = require("body-parser");
+const Rooms = require("./roomsAndUsers/newRooms");
 
 const {
   handleCreateRoom,
@@ -19,6 +20,7 @@ const port = process.env.PORT || 6021;
 
 let allRestaurants = [];
 let acceptedRestaurants = [];
+let rooms = new Rooms();
 
 const getRestaurants = async () => {
   try {
@@ -35,8 +37,6 @@ const getRestaurants = async () => {
     console.error(error);
   }
 };
-
-console.log(allRestaurants);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -72,6 +72,7 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     console.log(socket.rooms);
     handleJoinRoom(io)(username, roomId);
+    console.log("socket info:", socket.id);
   });
   socket.on("chat message", (msg) => {
     console.log("new msg", msg);
