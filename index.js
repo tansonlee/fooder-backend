@@ -15,6 +15,7 @@ const {
   handleLeaveRoom,
   handleChangeRoomCharacteristics,
 } = require("./roomsAndUsers/roomHandlers");
+const { findRoomId } = require("./utilities");
 
 const port = process.env.PORT || 6021;
 
@@ -57,8 +58,9 @@ app.get("/restaurants", async (req, res) => {
 
 app.post("/create-room", (req, res) => {
   console.log("Hi tanson");
-  const { userId, roomId } = handleCreateRoom(req.body.username); // should perform a "legit" check
-  res.status(200).json({ userId, roomId });
+  // const { userId, roomId } = handleCreateRoom(req.body.username); // should perform a "legit" check
+  const roomId = rooms.addRoom();
+  res.status(200).json({ roomId });
 });
 
 io.on("connection", (socket) => {
@@ -71,7 +73,8 @@ io.on("connection", (socket) => {
     console.log("user", username, "id", roomId);
     socket.join(roomId);
     console.log(socket.rooms);
-    handleJoinRoom(io)(username, roomId);
+    rooms.addUserToRoom(username, socket.id, roomId);
+    io.to(roomId).emit("user joined", username); // emit username instead
     console.log("socket info:", socket.id);
   });
   socket.on("chat message", (msg) => {
@@ -97,28 +100,23 @@ io.on("connection", (socket) => {
   socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
 
   socket.on("request restaurants", async () => {
-    /*
-
-
-    THIS NEEDS TO BE FIXED BADLY LOL
-    THe problem is that socket.rooms returns a set
-    We should try to figure out what the long ID is for and how to use it/get rid of it
-    
-    
-    */
-
     console.log("REQUEST", socket.rooms);
-    let room = "hi";
-    socket.rooms.forEach((item) => {
-      if (item.length == 6) {
-        room = item;
-      }
-    });
+    const room = findRoomId(socket.rooms);
     console.log("room", room);
     const restaurants = await getRestaurants();
     console.log(restaurants[0]);
     io.in(room).emit("found restaurants", restaurants);
-    console.log("done");
+    console.log("found restaurants!");
+  });
+
+  socket.on("accept restaurant", (restaurantId) => {
+    const roomId = findRoomId(socket.rooms);
+    const userId = socket.id;
+    const match = rooms.acceptRestaurant(roomId, userId, restaurantId);
+    if (match) {
+      console.log("match! emitting..");
+      socket.emit("update matches", restaurantId);
+    }
   });
 });
 

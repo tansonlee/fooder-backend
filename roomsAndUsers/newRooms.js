@@ -13,11 +13,13 @@ class Rooms {
     };
     return roomId;
   }
-  addUserToRoom(userId, roomId) {
+  addUserToRoom(username, userId, roomId) {
     this.data[roomId].users[userId] = {
+      username: username,
       acceptedRestaurants: [],
     };
   }
+  // returns true if there is a match between all users
   acceptRestaurant(roomId, userId, restaurantId) {
     this.data[roomId].users[userId].acceptedRestaurants.push(restaurantId);
     if (
@@ -25,8 +27,11 @@ class Rooms {
       !this.data[roomId].matchedRestaurants.includes(restaurantId)
     ) {
       this.data[roomId].matchedRestaurants.push(restaurantId);
+      return true;
     }
+    return false;
   }
+  // returns true if there is a match between all users
   checkForMatch(roomId, restaurantId) {
     const userArray = Object.values(this.data[roomId].users);
     for (const user of userArray) {
