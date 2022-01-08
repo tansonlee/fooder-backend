@@ -41,6 +41,14 @@ class Rooms {
     }
     return true;
   }
+  getRoomUsers(roomId) {
+    const userArray = Object.values(this.data[roomId].users);
+    const usernameArray = userArray.map((user) => user.username);
+    return usernameArray;
+  }
+  getMatchedRestaurants(roomId) {
+    return this.data[roomId].matchedRestaurants;
+  }
 }
 
 module.exports = Rooms;

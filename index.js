@@ -74,7 +74,8 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     console.log(socket.rooms);
     rooms.addUserToRoom(username, socket.id, roomId);
-    io.to(roomId).emit("user joined", username); // emit username instead
+    const usernames = rooms.getRoomUsers(roomId);
+    io.to(roomId).emit("user joined", usernames); // emit username instead
     console.log("socket info:", socket.id);
   });
   socket.on("chat message", (msg) => {
@@ -115,7 +116,7 @@ io.on("connection", (socket) => {
     const match = rooms.acceptRestaurant(roomId, userId, restaurantId);
     if (match) {
       console.log("match! emitting..");
-      socket.emit("update matches", restaurantId);
+      socket.emit("update matches", rooms.getMatchedRestaurants(roomId));
     }
   });
 });
@@ -124,12 +125,12 @@ io.on("connection", (socket) => {
 // a list of users for display/validating match purposes
 
 // if a user enters a roomID, direct that user to the room
-app.post("/:roomId", function (req, res) {
-  console.log(req.body);
-  handleJoinRoom(io)(req.body.username, req.params.roomId);
-  res.status(200).json({ status: 200 });
-  // res.sendFile(__dirname + "/prototype.html");
-});
+// app.post("/:roomId", function (req, res) {
+//   console.log(req.body);
+//   handleJoinRoom(io)(req.body.username, req.params.roomId);
+//   res.status(200).json({ status: 200 });
+//   // res.sendFile(__dirname + "/prototype.html");
+// });
 
 // if you send a text to someone, link to app store
 
