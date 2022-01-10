@@ -19,33 +19,27 @@ app.use(
   })
 );
 
-const {
-  handleCreateRoom,
-  handleJoinRoom,
-  handleLeaveRoom,
-  handleChangeRoomCharacteristics,
-} = require("./roomsAndUsers/roomHandlers");
 const { findRoomId } = require("./utilities");
 
-const port = process.env.PORT || 6021;
+const port = process.env.PORT || 3000;
 
-let allRestaurants = [];
-let acceptedRestaurants = [];
 let rooms = new Rooms();
 
-const getRestaurants = async () => {
+const getRestaurants = async (location) => {
   try {
     const yelpRes = await axios.get(process.env.YELP_RESTAURANT_ENDPOINT, {
       headers: {
         Authorization: `Bearer ${process.env.YELP_API_KEY}`,
       },
       params: {
-        location: "Waterloo, Ontario",
+        // location: "Waterloo, Ontario",
+        location,
       },
     });
     return yelpRes.data.businesses;
   } catch (error) {
     console.error(error);
+    return error;
   }
 };
 
@@ -53,97 +47,66 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/prototype.html");
+  res.status(200).send("Hello World! Server is running");
 });
 
-app.get("/restaurants", async (req, res) => {
-  restaurantList = await getRestaurants();
-  restaurantList = restaurantList.map((restaurant) => {
-    return restaurant.name;
-  });
-  res.json({
-    restaurants: restaurantList,
-  });
-});
+// app.get("/restaurants", async (req, res) => {
+// 	restaurantList = await getRestaurants();
+// 	restaurantList = restaurantList.map(restaurant => {
+// 		return restaurant.name;
+// 	});
+// 	res.json({
+// 		restaurants: restaurantList,
+// 	});
+// });
 
 app.post("/create-room", (req, res) => {
-  console.log("Hi tanson");
-  // const { userId, roomId } = handleCreateRoom(req.body.username); // should perform a "legit" check
+  console.log(`POST to /create-room`);
   const roomId = rooms.addRoom();
   res.status(200).json({ roomId });
 });
 
 io.on("connection", (socket) => {
-  socket.on("accept restaurant", (restaurant) => {
-    console.log("accepted:", restaurant);
-    acceptedRestaurants = [...acceptedRestaurants, restaurant];
-    io.emit("new match", restaurant);
-  });
-  socket.on("join", ({ username, roomId }) => {
-    console.log("user", username, "id", roomId);
+  // user joins a room, emit to all users in the room the updated list of all usernames
+  socket.on("JOIN_ROOM", ({ username, roomId }) => {
+    console.log(
+      `on JOIN_ROOM: ${username} joined room ${roomId}, socket.rooms is: ${JSON.stringify(
+        socket.rooms
+      )}`
+    );
     socket.join(roomId);
-    console.log(socket.rooms);
     rooms.addUserToRoom(username, socket.id, roomId);
+
     const usernames = rooms.getRoomUsers(roomId);
-    io.to(roomId).emit("user joined", usernames); // emit username instead
-    console.log("socket info:", socket.id);
-  });
-  socket.on("chat message", (msg) => {
-    console.log("new msg", msg);
-    io.emit("chat message", msg);
-  });
-  console.log("a user has connected");
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log(`emit NEW_ROOM_USERS: ${usernames}`);
+    io.in(roomId).emit("NEW_ROOM_USERS", usernames);
   });
 
-  // user creates a new room
-  // socket.on("create_room", handleCreateRoom(io, socket));
-
-  // user joins an existing room
-  socket.on("join_room", handleJoinRoom(io));
-
-  // user leaves a room
-  socket.on("leave_room", handleLeaveRoom(io));
-
-  // changing a room's characteristics
-  // newCharacteristics is an object with the new characteristics
-  socket.on("change_room_characteristics", handleChangeRoomCharacteristics(io));
-
-  socket.on("request restaurants", async () => {
-    console.log("REQUEST", socket.rooms);
+  // room owner requests the list of restaurants from yelp, emit to all users in the room the list of restaurants
+  socket.on("GET_RESTAURANTS", async ({ location }) => {
+    console.log(`on GET_RESTAURANTS: location=${location}`);
     const room = findRoomId(socket.rooms);
-    console.log("room", room);
-    const restaurants = await getRestaurants();
-    console.log(restaurants[0]);
-    io.in(room).emit("found restaurants", restaurants);
-    console.log("found restaurants!");
+    const restaurants = await getRestaurants(location);
+    console.log(`emit FOUND_RESTAURANTS: ${restaurants.map((e) => e.name)}`);
+    io.in(room).emit("FOUND_RESTAURANTS", restaurants);
   });
 
-  socket.on("accept restaurant", (restaurantId) => {
+  // user accepts a restaurant, if there is a match for all users, emit to all users in the room the updated list of matched restaurants
+  socket.on("ACCEPT_RESTAURANT", ({ restaurantId }) => {
+    console.log(`on ACCEPT_RESTAURANT: restaurantId=${restaurantId}`);
     const roomId = findRoomId(socket.rooms);
     const userId = socket.id;
-    const match = rooms.acceptRestaurant(roomId, userId, restaurantId);
-    if (match) {
-      console.log("match! emitting..");
-      socket.emit("update matches", rooms.getMatchedRestaurants(roomId));
+    const hasMatch = rooms.acceptRestaurant(roomId, userId, restaurantId);
+    if (hasMatch) {
+      console.log(`emit MATCHES_FOUND`);
+      // socket.emit("MATCHES_FOUND", rooms.getMatchedRestaurants(roomId));
+      io.in(roomId).emit("MATCHES_FOUND", rooms.getMatchedRestaurants(roomId));
     }
   });
 });
 
-// in a room, listen for "user joined", then add this user to
-// a list of users for display/validating match purposes
-
-// if a user enters a roomID, direct that user to the room
-// app.post("/:roomId", function (req, res) {
-//   console.log(req.body);
-//   handleJoinRoom(io)(req.body.username, req.params.roomId);
-//   res.status(200).json({ status: 200 });
-//   // res.sendFile(__dirname + "/prototype.html");
-// });
-
 // if you send a text to someone, link to app store
 
 server.listen(port, () => {
-  console.log("listening on *:" + port);
+  console.log(`listening on port: ${port}`);
 });
