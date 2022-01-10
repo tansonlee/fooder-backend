@@ -27,7 +27,7 @@ const port = process.env.PORT || 3001;
 
 let rooms = new Rooms();
 
-const getRestaurants = async location => {
+const getRestaurants = async (location, radius, price) => {
 	try {
 		const yelpRes = await axios.get(process.env.YELP_RESTAURANT_ENDPOINT, {
 			headers: {
@@ -35,7 +35,11 @@ const getRestaurants = async location => {
 			},
 			params: {
 				// location: "Waterloo, Ontario",
-				location,
+				location: location,
+				radius: radius,
+				price: price.join(", "),
+				open_now: true,
+				limit: 40,
 			},
 		});
 		return yelpRes.data.businesses;
@@ -62,6 +66,25 @@ app.get("/", (req, res) => {
 // 	});
 // });
 
+// coordinates are something like this: 43.6532,-79.3832
+app.get("/address/:coordinates", async (req, res) => {
+	try {
+		const [lat, lng] = req.params.coordinates.split(",");
+		const ep = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${process.env.OPEN_CAGE_API_KEY}`;
+		console.log("ep", ep);
+		const response = await axios.get(ep);
+		console.log("response", response.data);
+		const address = response.data.results[0].formatted;
+		res.json({
+			success: true,
+			address: address,
+		});
+	} catch (e) {
+		console.error(e);
+		res.json({ success: false, error: e });
+	}
+});
+
 app.post("/create-room", (req, res) => {
 	console.log(`POST to /create-room`);
 	const roomId = rooms.addRoom();
@@ -85,10 +108,10 @@ io.on("connection", socket => {
 	});
 
 	// room owner requests the list of restaurants from yelp, emit to all users in the room the list of restaurants
-	socket.on("GET_RESTAURANTS", async ({ location }) => {
+	socket.on("GET_RESTAURANTS", async ({ location, radius, price }) => {
 		console.log(`on GET_RESTAURANTS: location=${location}`);
 		const room = findRoomId(socket.rooms);
-		const restaurants = await getRestaurants(location);
+		const restaurants = await getRestaurants(location, radius, price);
 		console.log(`emit FOUND_RESTAURANTS: ${restaurants.map(e => e.name)}`);
 		io.in(room).emit("FOUND_RESTAURANTS", restaurants);
 	});
