@@ -2,12 +2,22 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 const dotEnv = require("dotenv").config();
+const cors = require("cors");
+const io = require("socket.io")(server, {
+  cors: {
+    origin: process.env.APP_ENDPOINT,
+    methods: ["GET", "POST"],
+  },
+});
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const Rooms = require("./roomsAndUsers/newRooms");
+app.use(
+  cors({
+    origin: process.env.APP_ENDPOINT,
+  })
+);
 
 const {
   handleCreateRoom,
@@ -135,5 +145,5 @@ io.on("connection", (socket) => {
 // if you send a text to someone, link to app store
 
 server.listen(port, () => {
-  console.log("listening on *:3000");
+  console.log("listening on *:" + port);
 });
