@@ -8,11 +8,14 @@ class Rooms {
 	//       user1: {
 	//         username: "user1",
 	//         acceptedRestaurants: [restaurantId1, restaurantId2],
+	//         isOwner: true,
+	//         userId: "sadfasdf234234HJSDKF"
 	//       }
 	//     },
 	//     matchedRestaurants: [restaurantId1, restaurantId2]
 	//   }
 	// }
+
 	constructor() {
 		this.data = {};
 	}
@@ -25,10 +28,14 @@ class Rooms {
 		};
 		return roomId;
 	}
-	addUserToRoom(username, userId, roomId) {
+	addUserToRoom(username, userId, roomId, isOwner) {
+		if (!(roomId in this.data)) return;
+
 		this.data[roomId].users[userId] = {
 			username: username,
 			acceptedRestaurants: [],
+			isOwner: isOwner,
+			userId: userId,
 		};
 	}
 	// returns true if there is a match between all users
@@ -55,8 +62,7 @@ class Rooms {
 	}
 	getRoomUsers(roomId) {
 		const userArray = Object.values(this.data[roomId].users);
-		const usernameArray = userArray.map(user => user.username);
-		return usernameArray;
+		return userArray;
 	}
 	getMatchedRestaurants(roomId) {
 		return this.data[roomId].matchedRestaurants;

@@ -71,9 +71,7 @@ app.get("/address/:coordinates", async (req, res) => {
 	try {
 		const [lat, lng] = req.params.coordinates.split(",");
 		const ep = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${process.env.OPEN_CAGE_API_KEY}`;
-		console.log("ep", ep);
 		const response = await axios.get(ep);
-		console.log("response", response.data);
 		const address = response.data.results[0].formatted;
 		res.json({
 			success: true,
@@ -93,18 +91,18 @@ app.post("/create-room", (req, res) => {
 
 io.on("connection", socket => {
 	// user joins a room, emit to all users in the room the updated list of all usernames
-	socket.on("JOIN_ROOM", ({ username, roomId }) => {
+	socket.on("JOIN_ROOM", ({ username, roomId, isOwner }) => {
 		console.log(
-			`on JOIN_ROOM: ${username} joined room ${roomId}, socket.rooms is: ${JSON.stringify(
-				socket.rooms
-			)}`
+			`on JOIN_ROOM: ${username} joined room ${roomId} as ${
+				isOwner ? "owner" : "not owner"
+			}, socket.rooms is: ${JSON.stringify(socket.rooms)}`
 		);
 		socket.join(roomId);
-		rooms.addUserToRoom(username, socket.id, roomId);
+		rooms.addUserToRoom(username, socket.id, roomId, isOwner);
 
-		const usernames = rooms.getRoomUsers(roomId);
-		console.log(`emit NEW_ROOM_USERS: ${usernames}`);
-		io.in(roomId).emit("NEW_ROOM_USERS", usernames);
+		const users = rooms.getRoomUsers(roomId);
+		console.log(`emit NEW_ROOM_USERS: ${users.map(user => user.username)}`);
+		io.in(roomId).emit("NEW_ROOM_USERS", { users: users });
 	});
 
 	// room owner requests the list of restaurants from yelp, emit to all users in the room the list of restaurants
