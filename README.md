@@ -1,6 +1,6 @@
 # Fooder
 
-[Frontend code (React Native)](https://github.com/tansonlee/fooder-frontend)
+[Frontend code (React)](https://github.com/tansonlee/fooder-frontend)
 
 Fooder is an app that helps people decide where to eat.
 
