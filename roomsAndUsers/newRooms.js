@@ -20,6 +20,10 @@ class Rooms {
 		this.data = {};
 	}
 
+	isValidrRoomId(roomId) {
+		return roomId in this.data;
+	}
+
 	addRoom() {
 		const roomId = generateRoomId();
 		this.data[roomId] = {
@@ -38,6 +42,34 @@ class Rooms {
 			userId: userId,
 		};
 	}
+
+	removeUserFromRoom(userId, roomId) {
+		if (!(roomId in this.data)) return;
+		const user = this.data[roomId].users[userId];
+		delete this.data[roomId].users[userId];
+		// if there are no more users, delete the room
+		if (Object.keys(this.data[roomId].users).length === 0) {
+			delete this.data[roomId];
+			return {
+				hasNewOwner: false,
+				newOwner: null,
+			};
+		}
+		if (user.isOwner && Object.keys(this.data[roomId].users).length > 0) {
+			// if the user is the owner, assign a new random owner
+			const newOwner = Object.values(this.data[roomId].users)[0];
+			newOwner.isOwner = true;
+			return {
+				hasNewOwner: true,
+				newOwner: newOwner.userId,
+			};
+		}
+		return {
+			hasNewOwner: false,
+			newOwner: null,
+		};
+	}
+
 	// returns true if there is a match between all users
 	acceptRestaurant(roomId, userId, restaurantId) {
 		this.data[roomId].users[userId].acceptedRestaurants.push(restaurantId);
