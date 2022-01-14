@@ -12,7 +12,7 @@ app.use(
 );
 const io = require("socket.io")(server, {
   cors: {
-    origin: true,
+    origin: "https://fooderweb.netlify.app/",
     // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
