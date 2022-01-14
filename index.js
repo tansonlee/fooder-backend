@@ -148,7 +148,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("reconnect", () => {
-    console.log("RECONNECTING TO....");
+    console.log("RECONNECTING", socket.id, "TO....");
   });
 
   // user disconnects from room
