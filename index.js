@@ -8,14 +8,14 @@ app.use(
   cors({
     credentials: true,
     // origin: "https://fooderweb.netlify.app",
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ENDPOINT,
   })
 );
 const io = require("socket.io")(server, {
   cors: {
     credentials: true,
     // origin: "https://fooderweb.netlify.app",
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ENDPOINT,
     methods: ["GET", "POST"],
   },
   reconnection: true,
