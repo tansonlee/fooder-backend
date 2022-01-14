@@ -4,6 +4,12 @@ const http = require("http");
 const server = http.createServer(app);
 const dotEnv = require("dotenv").config();
 const cors = require("cors");
+app.use(
+  cors({
+    origin: "https://fooderweb.netlify.app/",
+    // origin: "http://localhost:3000",
+  })
+);
 const io = require("socket.io")(server);
 //   , {
 //   cors: {
@@ -15,12 +21,6 @@ const io = require("socket.io")(server);
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const Rooms = require("./rooms");
-// app.use(
-//   cors({
-//     origin: "https://fooderweb.netlify.app/",
-//     // origin: "http://localhost:3000",
-//   })
-// );
 
 const { findRoomId } = require("./utilities");
 
