@@ -18,9 +18,8 @@ const io = require("socket.io")(server, {
     origin: process.env.CLIENT_ENDPOINT,
     methods: ["GET", "POST"],
   },
-  reconnection: true,
-  reconnectionDelay: 500,
-  maxReconnectionAttempts: 500,
+  pingTimeout: 60000,
+  pingInterval: 120000,
 });
 const axios = require("axios");
 const bodyParser = require("body-parser");
