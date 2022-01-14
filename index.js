@@ -150,6 +150,14 @@ io.on("connection", (socket) => {
     console.log("RECONNECTING", socket.id, "TO....");
   });
 
+  socket.conn.on("packet", function (packet) {
+    if (packet.type === "ping") console.log("received ping");
+  });
+
+  socket.conn.on("packetCreate", function (packet) {
+    if (packet.type === "pong") console.log("sending pong");
+  });
+
   // user disconnects from room
   socket.on("disconnecting", () => {
     console.log("WE ARE NOW DISCONNECTING", socket.id);
@@ -163,14 +171,6 @@ io.on("connection", (socket) => {
 
     io.in(roomId).emit("NEW_ROOM_USERS", { users: users });
   });
-});
-
-socket.conn.on("packet", function (packet) {
-  if (packet.type === "ping") console.log("received ping");
-});
-
-socket.conn.on("packetCreate", function (packet) {
-  if (packet.type === "pong") console.log("sending pong");
 });
 
 // if you send a text to someone, link to app store
