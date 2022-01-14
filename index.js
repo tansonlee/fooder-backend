@@ -103,7 +103,7 @@ app.post("/create-room", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("CONNECT............... NOW");
+  console.log("CONNECT", socket.id, "............... NOW");
   // user joins a room, emit to all users in the room the updated list of all usernames
   socket.on("JOIN_ROOM", ({ username, roomId, isOwner }) => {
     console.log(
@@ -153,7 +153,7 @@ io.on("connection", (socket) => {
 
   // user disconnects from room
   socket.on("disconnecting", () => {
-    console.log("WE ARE NOW DISCONNECTING");
+    console.log("WE ARE NOW DISCONNECTING", socket.id);
     const roomId = findRoomId(socket.rooms);
 
     const { hasNewOwner, newOwner } = rooms.removeUserFromRoom(
