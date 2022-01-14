@@ -165,6 +165,14 @@ io.on("connection", (socket) => {
   });
 });
 
+socket.conn.on("packet", function (packet) {
+  if (packet.type === "ping") console.log("received ping");
+});
+
+socket.conn.on("packetCreate", function (packet) {
+  if (packet.type === "pong") console.log("sending pong");
+});
+
 // if you send a text to someone, link to app store
 
 server.listen(port, () => {
