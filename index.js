@@ -4,22 +4,23 @@ const http = require("http");
 const server = http.createServer(app);
 const dotEnv = require("dotenv").config();
 const cors = require("cors");
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "https://fooderweb.netlify.app/",
-    // origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
+const io = require("socket.io")(server);
+//   , {
+//   cors: {
+//     origin: "https://fooderweb.netlify.app/",
+//     // origin: "http://localhost:3000",
+//     methods: ["GET", "POST"],
+//   },
+// });
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const Rooms = require("./rooms");
-app.use(
-  cors({
-    origin: "https://fooderweb.netlify.app/",
-    // origin: "http://localhost:3000",
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://fooderweb.netlify.app/",
+//     // origin: "http://localhost:3000",
+//   })
+// );
 
 const { findRoomId } = require("./utilities");
 
@@ -53,7 +54,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  res.status(200).send("Hello World! Server is running");
+  res.status(200).send("Hello World! The server is running");
 });
 
 // app.get("/restaurants", async (req, res) => {
