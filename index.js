@@ -6,7 +6,7 @@ const dotEnv = require("dotenv").config();
 const cors = require("cors");
 const io = require("socket.io")(server, {
   cors: {
-    origin: process.env.CLIENT_ENDPOINT,
+    origin: "https://fooderweb.netlify.app/",
     // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
@@ -16,7 +16,7 @@ const bodyParser = require("body-parser");
 const Rooms = require("./rooms");
 app.use(
   cors({
-    origin: process.env.CLIENT_ENDPOINT,
+    origin: "https://fooderweb.netlify.app/",
     // origin: "http://localhost:3000",
   })
 );
