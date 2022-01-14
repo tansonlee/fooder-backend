@@ -49,6 +49,7 @@ class Rooms {
     delete this.data[roomId].users[userId];
     // if there are no more users, delete the room
     if (Object.keys(this.data[roomId].users).length === 0) {
+      console.log("DELETIN GROOM NUMBER", roomId);
       delete this.data[roomId];
       return {
         hasNewOwner: false,

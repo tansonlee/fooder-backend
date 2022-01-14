@@ -103,6 +103,7 @@ app.post("/create-room", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  console.log("CONNECT............... NOW");
   // user joins a room, emit to all users in the room the updated list of all usernames
   socket.on("JOIN_ROOM", ({ username, roomId, isOwner }) => {
     console.log(
