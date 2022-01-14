@@ -126,10 +126,10 @@ io.on("connection", (socket) => {
     console.log(`on GET_RESTAURANTS: location=${location}`);
     const room = findRoomId(socket.rooms);
     const result = await getRestaurants(location, radius, price);
-    console.log("result is: ", result);
-    console.log(
-      `emit FOUND_RESTAURANTS: ${result.restaurants.map((e) => e.name)}`
-    );
+    // console.log("result is: ", result);
+    // console.log(
+    //   `emit FOUND_RESTAURANTS: ${result.restaurants.map((e) => e.name)}`
+    // );
     io.in(room).emit("FOUND_RESTAURANTS", result);
   });
 
@@ -152,6 +152,7 @@ io.on("connection", (socket) => {
 
   // user disconnects from room
   socket.on("disconnecting", () => {
+    console.log("WE ARE NOW DISCONNECTING");
     const roomId = findRoomId(socket.rooms);
 
     const { hasNewOwner, newOwner } = rooms.removeUserFromRoom(
