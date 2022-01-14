@@ -18,6 +18,9 @@ const io = require("socket.io")(server, {
     // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
+  reconnection: true,
+  reconnectionDelay: 500,
+  maxReconnectionAttempts: 500,
 });
 const axios = require("axios");
 const bodyParser = require("body-parser");
