@@ -6,12 +6,14 @@ const dotEnv = require("dotenv").config();
 const cors = require("cors");
 app.use(
   cors({
+    credentials: true,
     origin: "https://fooderweb.netlify.app",
     // origin: "http://localhost:3000",
   })
 );
 const io = require("socket.io")(server, {
   cors: {
+    credentials: true,
     origin: "https://fooderweb.netlify.app",
     // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
