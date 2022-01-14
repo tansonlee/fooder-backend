@@ -7,15 +7,15 @@ const cors = require("cors");
 app.use(
   cors({
     credentials: true,
-    origin: "https://fooderweb.netlify.app",
-    // origin: "http://localhost:3000",
+    // origin: "https://fooderweb.netlify.app",
+    origin: "http://localhost:3000",
   })
 );
 const io = require("socket.io")(server, {
   cors: {
     credentials: true,
-    origin: "https://fooderweb.netlify.app",
-    // origin: "http://localhost:3000",
+    // origin: "https://fooderweb.netlify.app",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
   reconnection: true,
@@ -146,9 +146,12 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("reconnect", () => {
+    console.log("RECONNECTING TO....");
+  });
+
   // user disconnects from room
   socket.on("disconnecting", () => {
-    console.log(`on disconnect`);
     const roomId = findRoomId(socket.rooms);
 
     const { hasNewOwner, newOwner } = rooms.removeUserFromRoom(
