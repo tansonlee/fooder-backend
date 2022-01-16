@@ -147,6 +147,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("RECONNECTING_ROOM", (data) => {
+    console.log("data is", data);
     const userId = socket.id;
     const roomId = data.roomId;
     const username = data.username;
