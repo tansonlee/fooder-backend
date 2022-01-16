@@ -15,10 +15,10 @@ const io = require("socket.io")(server, {
   cors: {
     credentials: true,
     // origin: "https://fooderweb.netlify.app",
-    origin: process.env.CLIENT_sENDPOINT,
+    origin: process.env.CLIENT_ENDPOINT,
     methods: ["GET", "POST"],
-    pingTimeout: 60000,
-    pingInterval: 120000,
+    // pingTimeout: 60000,
+    // pingInterval: 120000,
   },
 });
 const axios = require("axios");
