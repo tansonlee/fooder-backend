@@ -95,7 +95,7 @@ class Rooms {
   }
   getRoomUsers(roomId) {
     if (!(roomId in this.data)) {
-      return;
+      return null;
     }
     const userArray = Object.values(this.data[roomId].users);
     return userArray;
