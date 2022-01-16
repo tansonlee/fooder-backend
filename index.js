@@ -152,7 +152,7 @@ io.on("connection", (socket) => {
     const username = data.username;
     console.log("id is..", socket.id, "data is..", data);
     const test = rooms.isValidRoomId(roomId);
-    if (!test) {
+    if (test) {
       console.log("test", test);
       return;
     } else {
