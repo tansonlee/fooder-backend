@@ -151,10 +151,12 @@ io.on("connection", (socket) => {
     const roomId = data.roomId;
     const username = data.username;
     console.log("id is..", socket.id, "data is..", data);
-    if (!rooms.getRoomUsers(data)) {
+    const test = rooms.getRoomUsers(roomId);
+    if (!test) {
+      console.log("test", test);
       return;
     } else {
-      rooms.addRoom(data.roomId);
+      rooms.addRoom(roomId);
       rooms.addUserToRoom(username, userId, roomId, true);
     }
     console.log("NEW ROOMS", socket.rooms);
