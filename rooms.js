@@ -20,7 +20,7 @@ class Rooms {
     this.data = {};
   }
 
-  isValidrRoomId(roomId) {
+  isValidRoomId(roomId) {
     return roomId in this.data;
   }
 
@@ -95,7 +95,7 @@ class Rooms {
   }
   getRoomUsers(roomId) {
     if (!(roomId in this.data)) {
-      return null;
+      return false;
     }
     const userArray = Object.values(this.data[roomId].users);
     return userArray;

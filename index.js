@@ -89,7 +89,7 @@ app.get("/address/:coordinates", async (req, res) => {
 
 app.get("/verify-room/:roomId", async (req, res) => {
   const { roomId } = req.params;
-  const isValid = rooms.isValidrRoomId(roomId);
+  const isValid = rooms.isValidRoomId(roomId);
   res.json({
     validRoom: isValid,
   });
@@ -151,7 +151,7 @@ io.on("connection", (socket) => {
     const roomId = data.roomId;
     const username = data.username;
     console.log("id is..", socket.id, "data is..", data);
-    const test = rooms.getRoomUsers(roomId);
+    const test = rooms.isValidRoomId(roomId);
     if (!test) {
       console.log("test", test);
       return;
