@@ -147,15 +147,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("RECONNECTING_ROOM", (data) => {
+    const userId = socket.id;
+    const roomId = data.roomId;
+    const username = data.username;
     console.log("id is..", socket.id, "data is..", data);
-  });
-
-  socket.conn.on("packet", function (packet) {
-    if (packet.type === "ping") console.log("received ping");
-  });
-
-  socket.conn.on("packetCreate", function (packet) {
-    if (packet.type === "pong") console.log("sending pong");
+    if (!rooms.getRoomUsers(data)) {
+      return;
+    } else {
+      rooms.addRoom(data.roomId);
+      rooms.addUserToRoom(username, userId, roomId, true);
+    }
   });
 
   // user disconnects from room
