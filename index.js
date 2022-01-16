@@ -157,6 +157,7 @@ io.on("connection", (socket) => {
       rooms.addRoom(data.roomId);
       rooms.addUserToRoom(username, userId, roomId, true);
     }
+    console.log("NEW ROOMS", socket.rooms);
   });
 
   // user disconnects from room
