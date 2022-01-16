@@ -146,8 +146,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("reconnect", () => {
-    console.log("RECONNECTING", socket.id, "TO....");
+  socket.on("RECONNECTING_ROOM", (data) => {
+    console.log("id is..", socket.id, "data is..", data);
   });
 
   socket.conn.on("packet", function (packet) {
