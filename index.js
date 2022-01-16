@@ -15,11 +15,9 @@ const io = require("socket.io")(server, {
   cors: {
     credentials: true,
     // origin: "https://fooderweb.netlify.app",
-    origin: process.env.CLIENT_ENDPOINT,
+    origin: process.env.CLIENT_sENDPOINT,
     methods: ["GET", "POST"],
   },
-  pingTimeout: 60000,
-  pingInterval: 120000,
 });
 const axios = require("axios");
 const bodyParser = require("body-parser");
@@ -156,6 +154,7 @@ io.on("connection", (socket) => {
       console.log("test", test);
       return;
     } else {
+      socket.join(roomId);
       rooms.addRoom(roomId);
       rooms.addUserToRoom(username, userId, roomId, true);
     }
