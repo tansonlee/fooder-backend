@@ -17,6 +17,8 @@ const io = require("socket.io")(server, {
     // origin: "https://fooderweb.netlify.app",
     origin: process.env.CLIENT_sENDPOINT,
     methods: ["GET", "POST"],
+    pingTimeout: 60000,
+    pingInterval: 120000,
   },
 });
 const axios = require("axios");
