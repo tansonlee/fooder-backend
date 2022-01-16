@@ -156,9 +156,9 @@ io.on("connection", (socket) => {
       console.log("test", test);
       return;
     } else {
-      socket.join(roomId);
+      // socket.join(roomId);
       rooms.addRoom(roomId);
-      rooms.addUserToRoom(username, userId, roomId, true);
+      // rooms.addUserToRoom(username, userId, roomId, true);
     }
     console.log("NEW ROOMS", socket.rooms);
   });
