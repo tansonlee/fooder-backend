@@ -33,7 +33,9 @@ class Rooms {
     return roomId;
   }
   addUserToRoom(username, userId, roomId, isOwner) {
+    console.log("addUser1");
     if (!(roomId in this.data)) return;
+    console.log("addUser2");
 
     this.data[roomId].users[userId] = {
       username: username,
@@ -94,9 +96,11 @@ class Rooms {
     return true;
   }
   getRoomUsers(roomId) {
+    console.log("getUsers1");
     if (!(roomId in this.data)) {
       return;
     }
+    console.log("getUsers2");
     const userArray = Object.values(this.data[roomId].users);
     return userArray;
   }
