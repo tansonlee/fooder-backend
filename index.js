@@ -60,16 +60,6 @@ app.get("/", (req, res) => {
   res.status(200).send("Hello World! The server is running");
 });
 
-// app.get("/restaurants", async (req, res) => {
-// 	restaurantList = await getRestaurants();
-// 	restaurantList = restaurantList.map(restaurant => {
-// 		return restaurant.name;
-// 	});
-// 	res.json({
-// 		restaurants: restaurantList,
-// 	});
-// });
-
 // coordinates are something like this: 43.6532,-79.3832
 app.get("/address/:coordinates", async (req, res) => {
   try {
@@ -126,10 +116,6 @@ io.on("connection", (socket) => {
     console.log(`on GET_RESTAURANTS: location=${location}`);
     const room = findRoomId(socket.rooms);
     const result = await getRestaurants(location, radius, price);
-    // console.log("result is: ", result);
-    // console.log(
-    //   `emit FOUND_RESTAURANTS: ${result.restaurants.map((e) => e.name)}`
-    // );
     io.in(room).emit("FOUND_RESTAURANTS", result);
   });
 
@@ -144,41 +130,6 @@ io.on("connection", (socket) => {
       // socket.emit("MATCHES_FOUND", rooms.getMatchedRestaurants(roomId));
       io.in(roomId).emit("MATCHES_FOUND", rooms.getMatchedRestaurants(roomId));
     }
-  });
-
-  socket.on("RECONNECTING_ROOM", (data) => {
-    console.log("data is", data);
-    const userId = socket.id;
-    const roomId = data.roomId;
-    const username = data.username;
-    const isOwner = true;
-    console.log("id is..", socket.id, "data is..", data);
-    const test = rooms.isValidRoomId(roomId);
-    if (test) {
-      console.log("test", test);
-      return;
-    } else {
-      // socket.join(roomId);
-      rooms.addRoom(roomId);
-      // rooms.addUserToRoom(username, userId, roomId, true);
-      console.log(
-        `on JOIN_ROOM2222: ${username} joined room ${roomId} as ${
-          isOwner ? "owner" : "not owner"
-        }, socket.rooms is: ${JSON.stringify(socket.rooms)}`
-      );
-      socket.join(roomId);
-      rooms.addUserToRoom(username, socket.id, roomId, isOwner);
-
-      const users = rooms.getRoomUsers(roomId);
-      if (!users) {
-        return;
-      }
-      console.log(
-        `emit NEW_ROOM_USER22S: ${users.map((user) => user.username)}`
-      );
-      io.in(roomId).emit("NEW_ROOM_USERS", { users: users });
-    }
-    console.log("NEW ROOMS", socket.rooms);
   });
 
   // user disconnects from room
