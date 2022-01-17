@@ -113,10 +113,10 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     rooms.addUserToRoom(username, socket.id, roomId, isOwner);
 
-    const users = rooms.getRoomUsers(roomId);
-    if (!users) {
-      return;
-    }
+    // const users = rooms.getRoomUsers(roomId);
+    // if (!users) {
+    //   return;
+    // }
     console.log(`emit NEW_ROOM_USERS: ${users.map((user) => user.username)}`);
     io.in(roomId).emit("NEW_ROOM_USERS", { users: users });
   });
