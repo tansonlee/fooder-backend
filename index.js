@@ -78,7 +78,8 @@ app.get("/address/:coordinates", async (req, res) => {
 });
 
 app.get("/verify-room/:roomId", async (req, res) => {
-  const { roomId } = req.params;
+  let { roomId } = req.params;
+  roomId = roomId.toUpperCase();
   const isValid = rooms.isValidRoomId(roomId);
   res.json({
     validRoom: isValid,
@@ -100,6 +101,7 @@ io.on("connection", (socket) => {
         isOwner ? "owner" : "not owner"
       }, socket.rooms is: ${JSON.stringify(socket.rooms)}`
     );
+    roomId = roomId.toUpperCase();
     socket.join(roomId);
     rooms.addUserToRoom(username, socket.id, roomId, isOwner);
 
