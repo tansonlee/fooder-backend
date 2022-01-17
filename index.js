@@ -151,6 +151,7 @@ io.on("connection", (socket) => {
     const userId = socket.id;
     const roomId = data.roomId;
     const username = data.username;
+    const isOwner = true;
     console.log("id is..", socket.id, "data is..", data);
     const test = rooms.isValidRoomId(roomId);
     if (test) {
@@ -160,6 +161,22 @@ io.on("connection", (socket) => {
       // socket.join(roomId);
       rooms.addRoom(roomId);
       // rooms.addUserToRoom(username, userId, roomId, true);
+      console.log(
+        `on JOIN_ROOM2222: ${username} joined room ${roomId} as ${
+          isOwner ? "owner" : "not owner"
+        }, socket.rooms is: ${JSON.stringify(socket.rooms)}`
+      );
+      socket.join(roomId);
+      rooms.addUserToRoom(username, socket.id, roomId, isOwner);
+
+      const users = rooms.getRoomUsers(roomId);
+      if (!users) {
+        return;
+      }
+      console.log(
+        `emit NEW_ROOM_USER22S: ${users.map((user) => user.username)}`
+      );
+      io.in(roomId).emit("NEW_ROOM_USERS", { users: users });
     }
     console.log("NEW ROOMS", socket.rooms);
   });
