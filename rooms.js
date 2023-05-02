@@ -1,4 +1,4 @@
-const { generateRoomId } = require("./utilities");
+const { generateRoomId } = require('./utilities');
 
 class Rooms {
 	// this.data is an object like this:
@@ -20,7 +20,7 @@ class Rooms {
 		this.data = {};
 	}
 
-	isValidrRoomId(roomId) {
+	isValidRoomId(roomId) {
 		return roomId in this.data;
 	}
 
